@@ -1,38 +1,29 @@
 from datetime import datetime, timedelta
 
-
-user_list = [[], [], [], [], []]
-week_list = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"]
-week_check = []
+week_list = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"]
 
 def get_birthdays_per_week(users):
-    cur_date = datetime.now()
+    cur_date = datetime.today()   
     delta = timedelta(days=1)
-    i = 0
-    while i < 7:
-        newdate = cur_date + delta*i
-        newweek = newdate.weekday()
-        if (newweek == 5) or (newweek == 6):
-            newweek = 0
-        week_check.append((newdate.day, newdate.month, newweek))
-        i +=1
+  
+    def select_users(day, month):
+        ul = []
+        for u in users:
+            ud = u["birthday"]
+            if ((ud.month == month) and (ud.day == day)):
+                ul.append(u)
+        return ul
 
-    for u in users:
-        for w in week_check:
-            if (u["birthday"].day == w[0]) and (u["birthday"].month == w[1]):       
-                user_list[w[2]].append(u["name"])   
-                break  
+    def print_wl(wl, wd):
+        if len(wl) > 0:
+            print(week_list[wd]+": "+', '.join(p["name"] for p in wl))
 
-    i = 0 
-    ii = week_check[0][2]
-    while i < 5:
-        tmp = week_list[ii] + ':'
-        if len(user_list[ii]) > 0:
-            for n in user_list[ii]:
-                tmp += (' ' if tmp[-1] == ':' else ', ') + n
-        i +=1
-        ii +=1
-        if ii > 4:
-            ii = 0 
-        if tmp[-1] != ':':
-            print(tmp)
+    def create_wlist():
+        wl = []
+        for cd in range(7):
+            d = cur_date + delta * cd
+            wl.extend(select_users(d.day, d.month))
+            if d.weekday() < 5:
+                print_wl(wl, d.weekday())
+                wl.clear()
+    create_wlist()
